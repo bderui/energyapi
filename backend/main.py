@@ -63,7 +63,10 @@ async def get_user_by_id(user_id: str, current_user: dict = Depends(get_current_
 @app.get("/search/")
 async def search_users(name: str = Query(None), current_user: dict = Depends(get_current_active_admin)):
     # Vulnerable to NoSQL Injection
-    query = {"name": {"$regex": name}} if name else {}
+    if isinstance(password, str):
+        query = {"name": {"$regex": name}} if name else {}
+    else
+        return
     users = []
     async for user in user_collection.find(query):
         user["_id"] = str(user["_id"])  # Convert ObjectId to str
@@ -73,13 +76,13 @@ async def search_users(name: str = Query(None), current_user: dict = Depends(get
 
 # NoSQL Injection vulnerability
 @app.post("/login/")
-async def login(name: str = Body(...), password: Any = Body(...)):
+async def login(name: str = Body(...), password: str = Body(...)):
     if not name or not password:
         raise HTTPException(status_code=400, detail="Name and password must be provided")
     if isinstance(password, str):
         user = await user_collection.find_one({"name": {"$regex": name}, "password": password})
     else:
-        user = await user_collection.find_one({"name": {"$regex": name}, "password": password})
+        return
     if user:
         token = create_access_token({
             "sub": user["name"], 
