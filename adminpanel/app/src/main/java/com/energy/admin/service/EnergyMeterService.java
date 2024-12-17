@@ -56,7 +56,7 @@ public class EnergyMeterService {
         if (input == null) {
             return null;
         }
-        //input = input.replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+        input = input.replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
        
         return input;
     }
