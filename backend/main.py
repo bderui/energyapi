@@ -63,7 +63,7 @@ async def get_user_by_id(user_id: str, current_user: dict = Depends(get_current_
 @app.get("/search/")
 async def search_users(name: str = Query(None), current_user: dict = Depends(get_current_active_admin)):
     # Vulnerable to NoSQL Injection
-    if isinstance(password, str):
+    if isinstance(name, str):
         query = {"name": {"$regex": name}} if name else {}
     else
         return
@@ -90,20 +90,4 @@ async def login(name: str = Body(...), password: str = Body(...)):
         })
         return {"access_token": token, "token_type": "bearer"}
     raise HTTPException(status_code=401, detail="Invalid credentials")
-
-
-# NoSQL Injection vulnerability
-@app.get("/login/")
-async def login(name: str = Query(None), password: Any = Query(None)):
-    if not name or not password:
-        raise HTTPException(status_code=400, detail="Name and password must be provided")
-    user = await user_collection.find_one({"name": {"$regex": name}, "password": password})
-    if user:
-        token = create_access_token({
-            "sub": user["name"], 
-            "role": user["role"]
-        })
-        return {"access_token": token, "token_type": "bearer"}
-    raise HTTPException(status_code=401, detail="Invalid credentials")
-
 
